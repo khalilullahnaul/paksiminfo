@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Shield,
   BookOpen,
@@ -181,8 +182,8 @@ export default function AboutPage() {
               <div className="md:flex">
                 {/* Author Avatar Area */}
                 <div className="md:w-72 bg-gradient-to-br from-blue-950 to-blue-800 flex flex-col items-center justify-center p-8 text-white">
-                  <div className="w-28 h-28 rounded-full bg-blue-500/30 border-4 border-blue-400/50 flex items-center justify-center mb-4">
-                    <span className="text-3xl font-bold text-blue-200">MY</span>
+                  <div className="relative w-28 h-28 rounded-full border-4 border-blue-400/50 mb-4 overflow-hidden">
+                    <Image src="/author.jpg" alt="Muhammad Aoun Yousaf Naul" fill className="object-cover" />
                   </div>
                   <h3 className="text-xl font-bold text-center">
                     Muhammad Aoun Yousaf Naul
