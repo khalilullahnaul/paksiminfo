@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "Disclaimer - PakSimInfo",
     description:
       "Read the official disclaimer for PakSimInfo. Independent informational platform for SIM verification guides in Pakistan.",
-    url: "https://paksiminfo.vercel.app/disclaimer",
+    url: "https://paksiminfo-gules.vercel.app/disclaimer",
   },
 };
 
@@ -38,13 +38,13 @@ export default function DisclaimerPage() {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://paksiminfo.vercel.app",
+                item: "https://paksiminfo-gules.vercel.app",
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Disclaimer",
-                item: "https://paksiminfo.vercel.app/disclaimer",
+                item: "https://paksiminfo-gules.vercel.app/disclaimer",
               },
             ],
           }),

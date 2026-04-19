@@ -15,12 +15,12 @@ export const metadata: Metadata = {
     "jazz 4g sim",
     "jazz sim owner name",
   ],
-  alternates: { canonical: "https://paksiminfo.vercel.app/blog/jazz-sim-owner-detail" },
+  alternates: { canonical: "https://paksiminfo-gules.vercel.app/blog/jazz-sim-owner-detail" },
   openGraph: {
     title: "Jazz SIM Owner Detail: Complete Verification Guide 2026",
     description:
       "Complete 2026 guide to check Jazz SIM owner details using *110#, JazzCash app, JazzWorld, franchise, and PTA methods. Includes Warid merger info and 4G upgrade.",
-    url: "https://paksiminfo.vercel.app/blog/jazz-sim-owner-detail",
+    url: "https://paksiminfo-gules.vercel.app/blog/jazz-sim-owner-detail",
     type: "article",
   },
 };
@@ -68,12 +68,12 @@ export default function JazzSimOwnerDetailPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-01-15",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/jazz-sim-owner-detail",
+      "https://paksiminfo-gules.vercel.app/blog/jazz-sim-owner-detail",
   };
 
   const faqSchema = {

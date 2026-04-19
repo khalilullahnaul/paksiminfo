@@ -18,13 +18,13 @@ export const metadata: Metadata = {
     "block unauthorized zong sim",
   ],
   alternates: {
-    canonical: "https://paksiminfo.vercel.app/blog/zong-sim-ownership-check",
+    canonical: "https://paksiminfo-gules.vercel.app/blog/zong-sim-ownership-check",
   },
   openGraph: {
     title: "Zong SIM Ownership Check: Complete Guide to Verify Zong Number 2026",
     description:
       "Complete guide to check Zong SIM ownership. Use *310#, Zong app, and PTA methods to verify Zong number details in Pakistan 2026.",
-    url: "https://paksiminfo.vercel.app/blog/zong-sim-ownership-check",
+    url: "https://paksiminfo-gules.vercel.app/blog/zong-sim-ownership-check",
     type: "article",
   },
 };
@@ -71,12 +71,12 @@ export default function ZongSimOwnershipCheckPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-01-15",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/zong-sim-ownership-check",
+      "https://paksiminfo-gules.vercel.app/blog/zong-sim-ownership-check",
   };
 
   const faqSchema = {

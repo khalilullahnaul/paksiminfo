@@ -19,14 +19,14 @@ export const metadata: Metadata = {
   ],
   alternates: {
     canonical:
-      "https://paksiminfo.vercel.app/blog/latest-data-pakistan-sims-2026",
+      "https://paksiminfo-gules.vercel.app/blog/latest-data-pakistan-sims-2026",
   },
   openGraph: {
     title:
       "Latest Data Pakistan SIMs 2026: 5G Rollout, Privacy Updates & Telecom Statistics",
     description:
       "Explore the latest data on Pakistan SIMs in 2026. 5G rollout updates, new biometric standards, PTA regulations, identity theft prevention, and telecom industry statistics.",
-    url: "https://paksiminfo.vercel.app/blog/latest-data-pakistan-sims-2026",
+    url: "https://paksiminfo-gules.vercel.app/blog/latest-data-pakistan-sims-2026",
     type: "article",
   },
 };
@@ -74,12 +74,12 @@ export default function LatestDataPakistanSims2026Page() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-01-15",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/latest-data-pakistan-sims-2026",
+      "https://paksiminfo-gules.vercel.app/blog/latest-data-pakistan-sims-2026",
   };
 
   const faqSchema = {

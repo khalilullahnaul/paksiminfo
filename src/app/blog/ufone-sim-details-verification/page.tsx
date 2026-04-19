@@ -19,13 +19,13 @@ export const metadata: Metadata = {
   ],
   alternates: {
     canonical:
-      "https://paksiminfo.vercel.app/blog/ufone-sim-details-verification",
+      "https://paksiminfo-gules.vercel.app/blog/ufone-sim-details-verification",
   },
   openGraph: {
     title: "Ufone SIM Details & Verification: Complete Guide 2026",
     description:
       "Complete guide to check Ufone SIM details and verify ownership. Use *110#, Ufone app, and PTA methods for Ufone SIM verification in Pakistan 2026.",
-    url: "https://paksiminfo.vercel.app/blog/ufone-sim-details-verification",
+    url: "https://paksiminfo-gules.vercel.app/blog/ufone-sim-details-verification",
     type: "article",
   },
 };
@@ -71,12 +71,12 @@ export default function UfoneSimDetailsVerificationPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-01-15",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/ufone-sim-details-verification",
+      "https://paksiminfo-gules.vercel.app/blog/ufone-sim-details-verification",
   };
 
   const faqSchema = {

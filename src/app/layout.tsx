@@ -38,11 +38,11 @@ export const metadata: Metadata = {
   authors: [{ name: "Muhammad Aoun Yousaf Naul" }],
   creator: "Muhammad Aoun Yousaf Naul",
   publisher: "PakSimInfo",
-  metadataBase: new URL("https://paksiminfo.vercel.app"),
+  metadataBase: new URL("https://paksiminfo-gules.vercel.app"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://paksiminfo.vercel.app",
+    url: "https://paksiminfo-gules.vercel.app",
     siteName: "PakSimInfo",
     title: "PakSimInfo - Official Guide to SIM Verification & Ownership Details in Pakistan",
     description:
@@ -83,8 +83,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "PakSimInfo",
-              url: "https://paksiminfo.vercel.app",
-              logo: "https://paksiminfo.vercel.app/logo.png",
+              url: "https://paksiminfo-gules.vercel.app",
+              logo: "https://paksiminfo-gules.vercel.app/logo.png",
               description:
                 "PakSimInfo is an independent informational platform dedicated to providing guides on telecom safety and SIM verification in Pakistan.",
               author: {

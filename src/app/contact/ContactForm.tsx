@@ -181,7 +181,7 @@ export default function ContactForm() {
                         Email
                       </p>
                       <p className="text-sm font-medium text-blue-600 break-all">
-                        contact@paksiminfo.vercel.app
+                        contact@paksiminfo-gules.vercel.app
                       </p>
                     </div>
                   </div>

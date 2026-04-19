@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     "PTA DIRBS app",
   ],
   alternates: {
-    canonical: "https://paksiminfo.vercel.app/blog/pak-sim-info-check-guide",
+    canonical: "https://paksiminfo-gules.vercel.app/blog/pak-sim-info-check-guide",
   },
   openGraph: {
     title: "Pak Sim Info Check: Complete Guide to PTA SIM Verification 2026",
     description:
       "Complete guide to PTA SIM verification in Pakistan. Learn to use 668 SMS, DIRBS app, and carrier codes for SIM ownership verification.",
-    url: "https://paksiminfo.vercel.app/blog/pak-sim-info-check-guide",
+    url: "https://paksiminfo-gules.vercel.app/blog/pak-sim-info-check-guide",
     type: "article",
   },
 };
@@ -74,12 +74,12 @@ export default function PakSimInfoCheckGuidePage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-06-01",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/pak-sim-info-check-guide",
+      "https://paksiminfo-gules.vercel.app/blog/pak-sim-info-check-guide",
   };
 
   const faqSchema = {

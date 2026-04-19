@@ -16,12 +16,12 @@ export const metadata: Metadata = {
     "block unauthorized sim",
     "sim registration pakistan 2026",
   ],
-  alternates: { canonical: "https://paksiminfo.vercel.app/blog/cnic-sim-information" },
+  alternates: { canonical: "https://paksiminfo-gules.vercel.app/blog/cnic-sim-information" },
   openGraph: {
     title: "How to Check CNIC SIM Information Online in Pakistan 2026",
     description:
       "Learn how to check CNIC SIM information online. Find how many SIMs are registered against your CNIC using PTA 668 SMS and official methods.",
-    url: "https://paksiminfo.vercel.app/blog/cnic-sim-information",
+    url: "https://paksiminfo-gules.vercel.app/blog/cnic-sim-information",
     type: "article",
   },
 };
@@ -69,12 +69,12 @@ export default function CnicSimInformationPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-01-15",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/cnic-sim-information",
+      "https://paksiminfo-gules.vercel.app/blog/cnic-sim-information",
   };
 
   const faqSchema = {

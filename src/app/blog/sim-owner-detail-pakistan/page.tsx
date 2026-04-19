@@ -19,13 +19,13 @@ export const metadata: Metadata = {
   ],
   alternates: {
     canonical:
-      "https://paksiminfo.vercel.app/blog/sim-owner-detail-pakistan",
+      "https://paksiminfo-gules.vercel.app/blog/sim-owner-detail-pakistan",
   },
   openGraph: {
     title: "How to Check SIM Owner Details in Pakistan (2026 Complete Guide)",
     description:
       "Learn how to check SIM owner details in Pakistan using official PTA methods, carrier codes, and DIRBS app. Complete 2026 guide with step-by-step instructions.",
-    url: "https://paksiminfo.vercel.app/blog/sim-owner-detail-pakistan",
+    url: "https://paksiminfo-gules.vercel.app/blog/sim-owner-detail-pakistan",
     type: "article",
   },
 };
@@ -73,12 +73,12 @@ export default function SimOwnerDetailPakistanPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-01-15",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/sim-owner-detail-pakistan",
+      "https://paksiminfo-gules.vercel.app/blog/sim-owner-detail-pakistan",
   };
 
   const faqSchema = {

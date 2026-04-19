@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   ],
   alternates: {
     canonical:
-      "https://paksiminfo.vercel.app/blog/report-illegal-sim-pakistan",
+      "https://paksiminfo-gules.vercel.app/blog/report-illegal-sim-pakistan",
   },
   openGraph: {
     title: "How to Report Illegal/Unregistered SIMs in Pakistan 2026",
     description:
       "Learn how to report illegal or unregistered SIMs registered against your CNIC in Pakistan. Step-by-step guide for PTA complaints, CPLC, and FIA cybercrime reporting.",
-    url: "https://paksiminfo.vercel.app/blog/report-illegal-sim-pakistan",
+    url: "https://paksiminfo-gules.vercel.app/blog/report-illegal-sim-pakistan",
     type: "article",
   },
 };
@@ -74,12 +74,12 @@ export default function ReportIllegalSimPakistanPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-02-01",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/report-illegal-sim-pakistan",
+      "https://paksiminfo-gules.vercel.app/blog/report-illegal-sim-pakistan",
   };
 
   const faqSchema = {

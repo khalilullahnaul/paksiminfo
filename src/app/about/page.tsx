@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "About PakSimInfo - Our Mission & Author",
     description:
       "Learn about PakSimInfo, an independent informational platform providing accurate, legal SIM verification guides for Pakistan.",
-    url: "https://paksiminfo.vercel.app/about",
+    url: "https://paksiminfo-gules.vercel.app/about",
   },
 };
 
@@ -40,13 +40,13 @@ export default function AboutPage() {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://paksiminfo.vercel.app",
+                item: "https://paksiminfo-gules.vercel.app",
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "About",
-                item: "https://paksiminfo.vercel.app/about",
+                item: "https://paksiminfo-gules.vercel.app/about",
               },
             ],
           }),

@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://paksiminfo.vercel.app";
+  const baseUrl = "https://paksiminfo-gules.vercel.app";
   const lastMod = "2026-04-19";
 
   const pages = [

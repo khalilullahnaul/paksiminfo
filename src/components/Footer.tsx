@@ -64,7 +64,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2 text-sm text-blue-400">
               <Mail className="w-4 h-4" />
-              <span>contact@paksiminfo.vercel.app</span>
+              <span>contact@paksiminfo-gules.vercel.app</span>
             </div>
           </div>
 

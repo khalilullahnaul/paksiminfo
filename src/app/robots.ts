@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/"],
       },
     ],
-    sitemap: "https://paksiminfo.vercel.app/sitemap.xml",
+    sitemap: "https://paksiminfo-gules.vercel.app/sitemap.xml",
   };
 }

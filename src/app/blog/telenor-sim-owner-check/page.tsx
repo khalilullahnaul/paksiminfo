@@ -17,14 +17,14 @@ export const metadata: Metadata = {
     "telenor sim replacement",
   ],
   alternates: {
-    canonical: "https://paksiminfo.vercel.app/blog/telenor-sim-owner-check",
+    canonical: "https://paksiminfo-gules.vercel.app/blog/telenor-sim-owner-check",
   },
   openGraph: {
     title:
       "Telenor SIM Owner Check: Complete Guide to Verify Telenor Number 2026",
     description:
       "Complete 2026 guide to verify Telenor SIM ownership using *110#, Telenor app, and PTA methods. Includes 4G verification, SIM replacement, and unauthorized SIM blocking.",
-    url: "https://paksiminfo.vercel.app/blog/telenor-sim-owner-check",
+    url: "https://paksiminfo-gules.vercel.app/blog/telenor-sim-owner-check",
     type: "article",
   },
 };
@@ -72,12 +72,12 @@ export default function TelenorSimOwnerCheckPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-03-10",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/telenor-sim-owner-check",
+      "https://paksiminfo-gules.vercel.app/blog/telenor-sim-owner-check",
   };
 
   const faqSchema = {

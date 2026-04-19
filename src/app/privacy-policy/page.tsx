@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: "Privacy Policy - PakSimInfo",
     description:
       "Read PakSimInfo's privacy policy. Learn how we handle data, use cookies, and protect your privacy.",
-    url: "https://paksiminfo.vercel.app/privacy-policy",
+    url: "https://paksiminfo-gules.vercel.app/privacy-policy",
   },
 };
 
@@ -40,13 +40,13 @@ export default function PrivacyPolicyPage() {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://paksiminfo.vercel.app",
+                item: "https://paksiminfo-gules.vercel.app",
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Privacy Policy",
-                item: "https://paksiminfo.vercel.app/privacy-policy",
+                item: "https://paksiminfo-gules.vercel.app/privacy-policy",
               },
             ],
           }),
@@ -97,7 +97,7 @@ export default function PrivacyPolicyPage() {
               how we use it, and the choices you have regarding your data when you
               visit our website at{" "}
               <span className="text-blue-600 font-medium">
-                paksiminfo.vercel.app
+                paksiminfo-gules.vercel.app
               </span>
               . By using our website, you agree to the terms outlined in this
               policy.
@@ -391,10 +391,10 @@ export default function PrivacyPolicyPage() {
                 child has somehow provided personal information through our
                 website, please contact us immediately at{" "}
                 <a
-                  href="mailto:contact@paksiminfo.vercel.app"
+                  href="mailto:contact@paksiminfo-gules.vercel.app"
                   className="text-blue-600 hover:underline font-medium"
                 >
-                  contact@paksiminfo.vercel.app
+                  contact@paksiminfo-gules.vercel.app
                 </a>{" "}
                 and we will take prompt action to remove any such data.
               </p>
@@ -449,20 +449,20 @@ export default function PrivacyPolicyPage() {
                       <Mail className="w-4 h-4 text-blue-600" />
                       <span className="font-semibold text-blue-950">Email:</span>
                       <a
-                        href="mailto:contact@paksiminfo.vercel.app"
+                        href="mailto:contact@paksiminfo-gules.vercel.app"
                         className="text-blue-600 hover:underline"
                       >
-                        contact@paksiminfo.vercel.app
+                        contact@paksiminfo-gules.vercel.app
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-blue-600" />
                       <span className="font-semibold text-blue-950">Website:</span>
                       <a
-                        href="https://paksiminfo.vercel.app"
+                        href="https://paksiminfo-gules.vercel.app"
                         className="text-blue-600 hover:underline"
                       >
-                        paksiminfo.vercel.app
+                        paksiminfo-gules.vercel.app
                       </a>
                     </div>
                     <div className="flex items-center gap-2">

@@ -7,12 +7,12 @@ import ContactForm from "./ContactForm";
 export const metadata: Metadata = {
   title: "Contact PakSimInfo - Get in Touch",
   description:
-    "Get in touch with PakSimInfo for questions, corrections, or suggestions about SIM verification guides in Pakistan. Email: contact@paksiminfo.vercel.app",
+    "Get in touch with PakSimInfo for questions, corrections, or suggestions about SIM verification guides in Pakistan. Email: contact@paksiminfo-gules.vercel.app",
   openGraph: {
     title: "Contact PakSimInfo - Get in Touch",
     description:
       "Get in touch with PakSimInfo for questions, corrections, or suggestions about SIM verification guides in Pakistan.",
-    url: "https://paksiminfo.vercel.app/contact",
+    url: "https://paksiminfo-gules.vercel.app/contact",
   },
 };
 
@@ -65,7 +65,7 @@ export default function ContactPage() {
               },
               {
                 q: "I found an error in one of your guides. How can I report it?",
-                a: "Please use the contact form above or email us at contact@paksiminfo.vercel.app. We take accuracy seriously and will update our content promptly when verified corrections are received.",
+                a: "Please use the contact form above or email us at contact@paksiminfo-gules.vercel.app. We take accuracy seriously and will update our content promptly when verified corrections are received.",
               },
               {
                 q: "Can you help me block an unauthorized SIM registered against my CNIC?",

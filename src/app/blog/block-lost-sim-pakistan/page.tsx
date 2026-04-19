@@ -20,13 +20,13 @@ export const metadata: Metadata = {
   ],
   alternates: {
     canonical:
-      "https://paksiminfo.vercel.app/blog/block-lost-sim-pakistan",
+      "https://paksiminfo-gules.vercel.app/blog/block-lost-sim-pakistan",
   },
   openGraph: {
     title: "How to Block a Lost or Stolen SIM Card in Pakistan Instantly 2026",
     description:
       "Step-by-step guide to block a lost or stolen SIM card in Pakistan. Carrier helpline numbers, police FIR, PTA complaint, CPLC registration, and SIM replacement process.",
-    url: "https://paksiminfo.vercel.app/blog/block-lost-sim-pakistan",
+    url: "https://paksiminfo-gules.vercel.app/blog/block-lost-sim-pakistan",
     type: "article",
   },
 };
@@ -74,12 +74,12 @@ export default function BlockLostSimPakistanPage() {
     publisher: {
       "@type": "Organization",
       name: "PakSimInfo",
-      url: "https://paksiminfo.vercel.app",
+      url: "https://paksiminfo-gules.vercel.app",
     },
     datePublished: "2025-03-10",
     dateModified: "2026-04-01",
     mainEntityOfPage:
-      "https://paksiminfo.vercel.app/blog/block-lost-sim-pakistan",
+      "https://paksiminfo-gules.vercel.app/blog/block-lost-sim-pakistan",
   };
 
   const faqSchema = {
