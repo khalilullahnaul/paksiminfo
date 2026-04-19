@@ -74,6 +74,7 @@ function normalizeInput(input: string): { valid: boolean; value: string; type: s
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
+  const [searchMode, setSearchMode] = useState<"single" | "bulk">("single");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SimRecord[]>([]);
   const [error, setError] = useState("");
@@ -81,12 +82,33 @@ export default function HomePage() {
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const performSearch = useCallback(async () => {
-    const trimmed = query.trim();
-    if (!trimmed) return;
+    const rawVal = query.trim();
+    if (!rawVal) return;
 
-    const normalized = normalizeInput(trimmed);
-    if (!normalized.valid) {
-      setError(normalized.message || "Invalid input.");
+    let queries: string[] = [];
+    if (searchMode === "bulk") {
+      queries = rawVal.split(/[\n,]+/).map((s) => s.trim()).filter((s) => s);
+      if (queries.length > 20) {
+        setError("Please enter a maximum of 20 numbers for bulk search at once to prevent server limits.");
+        return;
+      }
+    } else {
+      queries = [rawVal];
+    }
+
+    const validInputs: string[] = [];
+    for (const q of queries) {
+      const normalized = normalizeInput(q);
+      if (normalized.valid) {
+        validInputs.push(normalized.value);
+      } else if (searchMode === "single") {
+        setError(normalized.message || "Invalid input.");
+        return;
+      }
+    }
+
+    if (validInputs.length === 0) {
+      setError("No valid numbers or CNICs found in your input.");
       return;
     }
 
@@ -95,48 +117,58 @@ export default function HomePage() {
     setLoading(true);
 
     try {
-      const targetUrl = `https://amscript.xyz/PublicApi/Siminfo.php?number=${normalized.value}`;
-      const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
-      ];
+      const allResults: SimRecord[] = [];
+      for (let i = 0; i < validInputs.length; i++) {
+        const val = validInputs[i];
+        const targetUrl = `https://amscript.xyz/PublicApi/Siminfo.php?number=${val}`;
+        const proxies = [
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+          `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+          `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
+        ];
 
-      const fetchWithTimeout = async (url: string) => {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const fetchWithTimeout = async (url: string) => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+            const json = await response.json();
+            if (json && typeof json.success !== "undefined") return json;
+            throw new Error("Invalid response");
+          } catch (err) {
+            clearTimeout(timeoutId);
+            throw err;
+          }
+        };
+
         try {
-          const response = await fetch(url, { signal: controller.signal });
-          clearTimeout(timeoutId);
-          if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-          const json = await response.json();
-          if (json && typeof json.success !== "undefined") return json;
-          throw new Error("Invalid response");
-        } catch (err) {
-          clearTimeout(timeoutId);
-          throw err;
+          const data = await Promise.any(proxies.map((url) => fetchWithTimeout(url)));
+          if (data.success && Array.isArray(data.data)) {
+            const validRecs = data.data.filter((rec: SimRecord) => {
+              const isNone = (v: string) => !v || v.trim().toLowerCase() === "none" || v.trim() === "";
+              return !(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address));
+            });
+            allResults.push(...validRecs);
+          }
+        } catch (e) {
+          console.warn(`Failed for ${val}`, e);
         }
-      };
+      }
 
-      const data = await Promise.any(proxies.map((url) => fetchWithTimeout(url)));
-      if (data.success && Array.isArray(data.data)) {
-        const validRecs = data.data.filter((rec: SimRecord) => {
-          const isNone = (v: string) => !v || v.trim().toLowerCase() === "none" || v.trim() === "";
-          return !(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address));
-        });
-        setResults(validRecs);
-        if (validRecs.length > 0) {
-          setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
-        }
+      setResults(allResults);
+      if (allResults.length > 0) {
+        setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
       } else {
-        setError("No results found for this number/CNIC. This database has limited historical data.");
+        setError("No results found for the provided input(s). This database has limited historical data.");
       }
     } catch {
       setError("Network error: Could not retrieve data. The API may be temporarily unavailable.");
     } finally {
       setLoading(false);
     }
-  }, [query]);
+  }, [query, searchMode]);
 
   const copyToClipboard = (text: string, fieldId: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -196,17 +228,42 @@ export default function HomePage() {
 
             {/* Search Box */}
             <div className="relative max-w-2xl mx-auto">
+              {/* Mode Toggle */}
+              <div className="flex justify-center gap-2 mb-6 p-1 bg-white/10 backdrop-blur-md rounded-xl inline-flex border border-white/20">
+                <button
+                  onClick={() => setSearchMode("single")}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${searchMode === "single" ? "bg-white text-blue-900 shadow-sm" : "text-blue-100 hover:text-white"}`}
+                >
+                  Single
+                </button>
+                <button
+                  onClick={() => setSearchMode("bulk")}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${searchMode === "bulk" ? "bg-white text-blue-900 shadow-sm" : "text-blue-100 hover:text-white"}`}
+                >
+                  Bulk
+                </button>
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-2">
                 <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-300" />
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && performSearch()}
-                    placeholder="Enter mobile number (03XX) or CNIC (13 digits)"
-                    className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-base"
-                  />
+                  <Search className="absolute left-4 top-4 w-5 h-5 text-blue-300" />
+                  {searchMode === "single" ? (
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && performSearch()}
+                      placeholder="Enter mobile number (03XX) or CNIC (13 digits)"
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-base"
+                    />
+                  ) : (
+                    <textarea
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Enter multiple numbers or CNICs, separated by commas or newlines..."
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-base min-h-[100px] resize-y"
+                    />
+                  )}
                 </div>
                 <Button
                   onClick={performSearch}
