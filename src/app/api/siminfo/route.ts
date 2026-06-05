@@ -4,34 +4,20 @@ interface SimRequest {
   number: string;
 }
 
-interface SimResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
-
 function formatPhoneNumber(input: string): string {
   // Remove all non-digit characters
   let cleaned = input.replace(/\D/g, "");
 
-  // Handle different number formats
+  // For Pakistani numbers, we need +92 format
   if (cleaned.startsWith("92") && cleaned.length === 12) {
-    // 923XXXXXXXXX format (international without +)
     return "+" + cleaned;
   } else if (cleaned.startsWith("0") && cleaned.length === 11) {
-    // 03XXXXXXXXX format (local)
     return "+92" + cleaned.slice(1);
   } else if (cleaned.length === 10) {
-    // 3XXXXXXXXX format (without leading 0)
     return "+923" + cleaned;
   } else if (cleaned.length === 13) {
     // CNIC format
     return cleaned;
-  } else if (!cleaned.startsWith("+")) {
-    // Add + prefix if missing
-    if (cleaned.startsWith("92")) {
-      return "+" + cleaned;
-    }
   }
 
   return cleaned;
@@ -39,50 +25,139 @@ function formatPhoneNumber(input: string): string {
 
 async function fetchWithRetry(
   url: string,
-  maxRetries: number = 3
-): Promise<Response> {
+  maxRetries: number = 5
+): Promise<any> {
+  let lastError: any;
+
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      console.log(`[Attempt ${attempt + 1}] Fetching: ${url}`);
 
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          Accept: "application/json, text/plain, */*",
+          Accept: "*/*",
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          Referer: "https://paksiminfo.vercel.app",
-          Connection: "keep-alive",
         },
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
+      const responseText = await response.text();
+      console.log(
+        `[Response ${attempt + 1}] Status: ${response.status}, Text: ${responseText.substring(
+          0,
+          300
+        )}`
+      );
+
       if (response.ok) {
-        return response;
+        try {
+          const data = JSON.parse(responseText);
+          return data;
+        } catch {
+          return { success: false, rawData: responseText };
+        }
       }
 
       if (response.status === 429 || response.status === 503) {
-        // Rate limited or service unavailable, retry after delay
         await new Promise((resolve) =>
-          setTimeout(resolve, 1000 * (attempt + 1))
+          setTimeout(resolve, 2000 * (attempt + 1))
         );
         continue;
       }
 
-      throw new Error(`HTTP ${response.status}`);
+      lastError = new Error(`HTTP ${response.status}`);
     } catch (error) {
-      if (attempt === maxRetries - 1) {
-        throw error;
+      lastError = error;
+      const errorMsg =
+        error instanceof Error ? error.message : String(error);
+      console.log(`[Attempt ${attempt + 1}] Error: ${errorMsg}`);
+
+      if (attempt < maxRetries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
       }
-      // Wait before retrying
-      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
     }
   }
 
-  throw new Error("Max retries exceeded");
+  throw lastError || new Error("Max retries exceeded");
+}
+
+function extractContactInfo(data: any): any[] {
+  let records: any[] = [];
+
+  console.log("[Extract] Processing data:", JSON.stringify(data).substring(0, 500));
+
+  // Handle different response formats
+  if (!data) {
+    return [];
+  }
+
+  // Format 1: { success: true/false, data: [...] }
+  if (data.success && data.data) {
+    if (Array.isArray(data.data)) {
+      records = data.data;
+    } else if (typeof data.data === "object") {
+      records = [data.data];
+    }
+  }
+  // Format 2: { result: {...} }
+  else if (data.result) {
+    if (Array.isArray(data.result)) {
+      records = data.result;
+    } else {
+      records = [data.result];
+    }
+  }
+  // Format 3: Direct array
+  else if (Array.isArray(data)) {
+    records = data;
+  }
+  // Format 4: Direct object with sim/contact info
+  else if (
+    data.full_name ||
+    data.phone ||
+    data.cnic ||
+    data.address ||
+    data.name ||
+    data.mobile ||
+    data.operator
+  ) {
+    records = [data];
+  }
+
+  console.log(
+    "[Extract] Found records count:",
+    records.length,
+    records.length > 0 ? records[0] : ""
+  );
+
+  // Normalize and filter records
+  const normalized = records
+    .filter((rec: any) => rec && typeof rec === "object")
+    .map((rec: any) => ({
+      full_name: rec.full_name || rec.name || rec.owner || "",
+      phone: rec.phone || rec.mobile || rec.number || rec.nomor || "",
+      cnic: rec.cnic || rec.id || rec.nric || "",
+      address: rec.address || rec.location || rec.lokasi || "",
+    }))
+    .filter((rec: any) => {
+      // Keep record if it has at least some data
+      return (
+        (rec.full_name && rec.full_name.trim()) ||
+        (rec.phone && rec.phone.trim()) ||
+        (rec.cnic && rec.cnic.trim()) ||
+        (rec.address && rec.address.trim())
+      );
+    });
+
+  console.log("[Extract] Normalized records:", normalized);
+  return normalized;
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -98,124 +173,35 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     const formattedNumber = formatPhoneNumber(number.trim());
+    console.log(`[Search] Input: ${number}, Formatted: ${formattedNumber}`);
 
-    console.log(
-      `[SIM Search] Input: ${number}, Formatted: ${formattedNumber}`
-    );
-
-    // Build the API URL
+    // Try the main API endpoint
     const apiUrl = `https://amscript.xyz/PublicApi/Siminfo.php?number=${encodeURIComponent(
       formattedNumber
     )}`;
 
-    console.log(`[SIM Search] Calling API: ${apiUrl}`);
+    console.log(`[Search] Calling: ${apiUrl}`);
 
-    // Fetch from the API
-    const response = await fetchWithRetry(apiUrl);
-    const responseText = await response.text();
-
-    console.log(`[SIM Search] Raw response: ${responseText.substring(0, 500)}`);
-
-    let data: any;
-
-    // Try to parse as JSON
+    let responseData: any;
     try {
-      data = JSON.parse(responseText);
-    } catch {
-      console.log("[SIM Search] Response is not JSON, treating as plain text");
-      // If it's plain text, check what we got
-      if (
-        responseText.toLowerCase().includes("no results") ||
-        responseText.toLowerCase().includes("not found")
-      ) {
-        return NextResponse.json(
-          {
-            success: false,
-            error:
-              "No results found for the provided input(s). This database has limited historical data. Please try with a different number or use official PTA methods.",
-          },
-          { status: 404 }
-        );
-      }
-
-      // Try to wrap it as data
-      data = { success: false, data: responseText };
-    }
-
-    console.log(`[SIM Search] Parsed data:`, data);
-
-    // Handle various response structures
-    if (!data || (data.success === false && !data.data)) {
-      console.log("[SIM Search] No data found in response");
+      responseData = await fetchWithRetry(apiUrl);
+    } catch (error) {
+      console.error("[Search] API call failed:", error);
       return NextResponse.json(
         {
           success: false,
           error:
-            "No results found for the provided input(s). This database has limited historical data. Please try with a different number or use official PTA methods.",
+            "Unable to connect to the SIM info service. Please try again later.",
         },
-        { status: 404 }
+        { status: 503 }
       );
     }
 
-    // Extract records - handle multiple possible response formats
-    let records: any[] = [];
-
-    if (data.data) {
-      if (Array.isArray(data.data)) {
-        records = data.data;
-      } else if (typeof data.data === "object") {
-        records = [data.data];
-      } else if (typeof data.data === "string") {
-        // Try to parse if it's a stringified JSON
-        try {
-          const parsed = JSON.parse(data.data);
-          records = Array.isArray(parsed) ? parsed : [parsed];
-        } catch {
-          // If it's just a string message, no data
-          console.log("[SIM Search] data.data is a string message");
-          records = [];
-        }
-      }
-    } else if (Array.isArray(data)) {
-      records = data;
-    } else if (
-      data.full_name ||
-      data.phone ||
-      data.cnic ||
-      data.address
-    ) {
-      // Direct record format
-      records = [data];
-    }
-
-    console.log(`[SIM Search] Extracted records count: ${records.length}`);
-
-    // Filter out empty/none records
-    const isEmpty = (v: any) =>
-      !v ||
-      (typeof v === "string" &&
-        (v.trim().toLowerCase() === "none" ||
-          v.trim() === "" ||
-          v.trim().toLowerCase() === "n/a"));
-
-    records = records.filter((rec: any) => {
-      if (!rec || typeof rec !== "object") return false;
-      
-      const hasAnyData =
-        !isEmpty(rec.full_name) ||
-        !isEmpty(rec.phone) ||
-        !isEmpty(rec.cnic) ||
-        !isEmpty(rec.address);
-
-      return hasAnyData;
-    });
-
-    console.log(
-      `[SIM Search] Filtered records count: ${records.length}`,
-      records
-    );
+    // Extract contact information
+    const records = extractContactInfo(responseData);
 
     if (records.length === 0) {
+      console.log("[Search] No valid records found");
       return NextResponse.json(
         {
           success: false,
@@ -226,22 +212,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Normalize records
-    const normalizedRecords = records.map((rec: any) => ({
-      full_name: rec.full_name || rec.name || "",
-      phone: rec.phone || rec.mobile || "",
-      cnic: rec.cnic || rec.id || "",
-      address: rec.address || rec.location || "",
-    }));
-
-    console.log("[SIM Search] Success, returning records:", normalizedRecords);
-
+    console.log("[Search] Returning records:", records);
     return NextResponse.json({
       success: true,
-      data: normalizedRecords,
+      data: records,
     });
   } catch (error) {
-    console.error("[SIM Search Error]", error);
+    console.error("[Search] Unexpected error:", error);
 
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
@@ -260,27 +237,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    if (
-      errorMessage.includes("fetch") ||
-      errorMessage.includes("network") ||
-      errorMessage.includes("ERR_")
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            "Network error: Could not connect to the service. Please check your internet connection and try again.",
-        },
-        { status: 503 }
-      );
-    }
-
     return NextResponse.json(
       {
         success: false,
         error:
           "An error occurred while processing your request. Please try again later.",
-        details: errorMessage,
       },
       { status: 500 }
     );
@@ -290,6 +251,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 export async function GET(): Promise<NextResponse> {
   return NextResponse.json({
     message: "SIM Info API",
-    usage: "POST /api/siminfo with { number: 'Pakistani mobile number or CNIC' }",
+    usage: "POST /api/siminfo with { number: 'Pakistani mobile number' }",
+    example: "{ number: '03001234567' }",
   });
 }
