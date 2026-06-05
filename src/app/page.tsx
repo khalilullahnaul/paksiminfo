@@ -118,12 +118,11 @@ export default function HomePage() {
 
     try {
       const allResults: SimRecord[] = [];
-      
+
       for (let i = 0; i < validInputs.length; i++) {
         const val = validInputs[i];
-        
+
         try {
-          // Use our own API endpoint instead of calling external API directly
           const response = await fetch("/api/siminfo", {
             method: "POST",
             headers: {
@@ -139,18 +138,30 @@ export default function HomePage() {
 
           const data = await response.json();
 
-          // Handle successful response
           if (data.success && Array.isArray(data.data)) {
             const validRecs = data.data.filter((rec: any) => {
-              const isNone = (v: any) => !v || (typeof v === 'string' && (v.trim().toLowerCase() === "none" || v.trim() === ""));
-              return !(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address));
+              const isNone = (v: any) =>
+                !v || (typeof v === "string" && (v.trim().toLowerCase() === "none" || v.trim() === ""));
+              return !(
+                isNone(rec.full_name) &&
+                isNone(rec.phone) &&
+                isNone(rec.cnic) &&
+                isNone(rec.address)
+              );
             });
             allResults.push(...validRecs);
           } else if (data.success && data.data && !Array.isArray(data.data)) {
-            // Single record response
             const rec = data.data;
-            const isNone = (v: any) => !v || (typeof v === 'string' && (v.trim().toLowerCase() === "none" || v.trim() === ""));
-            if (!(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address))) {
+            const isNone = (v: any) =>
+              !v || (typeof v === "string" && (v.trim().toLowerCase() === "none" || v.trim() === ""));
+            if (
+              !(
+                isNone(rec.full_name) &&
+                isNone(rec.phone) &&
+                isNone(rec.cnic) &&
+                isNone(rec.address)
+              )
+            ) {
               allResults.push(rec);
             }
           }
@@ -161,34 +172,48 @@ export default function HomePage() {
 
       setResults(allResults);
       if (allResults.length > 0) {
-        setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
+        setTimeout(
+          () =>
+            resultsRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            }),
+          200
+        );
       } else {
-        setError("No results found for the provided input(s). This database has limited historical data. Please try with a different number or use official PTA methods.");
+        setError(
+          "No results found for the provided input(s). This database has limited historical data. Please try with a different number or use official PTA methods."
+        );
       }
     } catch (err) {
       console.error("Search error:", err);
-      setError("Network error: Could not retrieve data. Please check your internet connection and try again. If the problem persists, the API may be temporarily unavailable.");
+      setError(
+        "Network error: Could not retrieve data. Please check your internet connection and try again. If the problem persists, the API may be temporarily unavailable."
+      );
     } finally {
       setLoading(false);
     }
   }, [query, searchMode]);
 
   const copyToClipboard = (text: string, fieldId: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedField(fieldId);
-      setTimeout(() => setCopiedField(null), 1500);
-    }).catch(() => {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setCopiedField(fieldId);
-      setTimeout(() => setCopiedField(null), 1500);
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopiedField(fieldId);
+        setTimeout(() => setCopiedField(null), 1500);
+      })
+      .catch(() => {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        setCopiedField(fieldId);
+        setTimeout(() => setCopiedField(null), 1500);
+      });
   };
 
   const exportCSV = () => {
@@ -210,38 +235,54 @@ export default function HomePage() {
     URL.revokeObjectURL(url);
   };
 
+  const bgPatternUrl =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDAgTCA0MCAwIE0gMCAwIEwgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjAuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==";
+
   return (
     <>
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHd[...]
+        <div
+          className="absolute inset-0"
+          style={{ backgroundImage: `url('${bgPatternUrl}')` }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-blue-800/40 border border-blue-700/50 rounded-full px-4 py-1.5 text-sm mb-6">
               <Clock className="w-4 h-4 text-blue-300" />
-              <span className="text-blue-200">Updated April 2026 &middot; Official PTA Methods</span>
+              <span className="text-blue-200">
+                Updated April 2026 &middot; Official PTA Methods
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6">
               Pak Sim Info: Complete Guide to{" "}
-              <span className="text-blue-400">SIM Verification</span> & Ownership in Pakistan
+              <span className="text-blue-400">SIM Verification</span> & Ownership
+              in Pakistan
             </h1>
             <p className="text-lg sm:text-xl text-blue-200 leading-relaxed mb-10 max-w-2xl mx-auto">
-              Learn how to check SIM owner details, verify SIMs via PTA and CNIC, and protect yourself with the latest data on Pakistan SIMs 2026. All methods are legal, official, and up-to-date.
+              Learn how to check SIM owner details, verify SIMs via PTA and CNIC,
+              and protect yourself with the latest data on Pakistan SIMs 2026. All
+              methods are legal, official, and up-to-date.
             </p>
 
-            {/* Search Box */}
             <div className="relative max-w-2xl mx-auto">
-              {/* Mode Toggle */}
               <div className="flex justify-center gap-2 mb-6 p-1 bg-white/10 backdrop-blur-md rounded-xl inline-flex border border-white/20">
                 <button
                   onClick={() => setSearchMode("single")}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${searchMode === "single" ? "bg-white text-blue-900 shadow-sm" : "text-blue-100 hover:text-white"}`}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    searchMode === "single"
+                      ? "bg-white text-blue-900 shadow-sm"
+                      : "text-blue-100 hover:text-white"
+                  }`}
                 >
                   Single
                 </button>
                 <button
                   onClick={() => setSearchMode("bulk")}
-                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${searchMode === "bulk" ? "bg-white text-blue-900 shadow-sm" : "text-blue-100 hover:text-white"}`}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    searchMode === "bulk"
+                      ? "bg-white text-blue-900 shadow-sm"
+                      : "text-blue-100 hover:text-white"
+                  }`}
                 >
                   Bulk
                 </button>
@@ -257,14 +298,14 @@ export default function HomePage() {
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && performSearch()}
                       placeholder="Enter mobile number (03XX) or CNIC (13 digits)"
-                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-ba[...]
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70"
                     />
                   ) : (
                     <textarea
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Enter multiple numbers or CNICs, separated by commas or newlines..."
-                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-ba[...]
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 min-h-24"
                     />
                   )}
                 </div>
@@ -275,7 +316,25 @@ export default function HomePage() {
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path cla[...]
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
                       Searching...
                     </span>
                   ) : (
@@ -297,28 +356,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Disclaimer Banner */}
       <section className="bg-amber-50 border-b border-amber-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-start gap-2 text-sm text-amber-800">
             <Shield className="w-4 h-4 mt-0.5 shrink-0" />
             <p>
-              <strong>Legal Notice:</strong> PakSimInfo is an informational platform only. We are not affiliated with PTA or any telecom provider. We do not access private databases. The search t[...]
-              <Link href="/blog/pak-sim-info-check-guide" className="underline font-semibold hover:text-amber-900">PTA 668 SMS service</Link> or visit{" "}
-              <a href="https://www.pta.gov.pk" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-amber-900">PTA.gov.pk</a>.
+              <strong>Legal Notice:</strong> PakSimInfo is an informational
+              platform only. We are not affiliated with PTA or any telecom
+              provider. We do not access private databases. The search tool uses
+              a historical database. For real-time verification, use the{" "}
+              <Link
+                href="/blog/pak-sim-info-check-guide"
+                className="underline font-semibold hover:text-amber-900"
+              >
+                PTA 668 SMS service
+              </Link>{" "}
+              or visit{" "}
+              <a
+                href="https://www.pta.gov.pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-semibold hover:text-amber-900"
+              >
+                PTA.gov.pk
+              </a>
+              .
             </p>
           </div>
         </div>
       </section>
 
-      {/* Results Section */}
       {results.length > 0 && (
         <section ref={resultsRef} className="bg-gray-50 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Search Results</h2>
-                <p className="text-sm text-gray-500 mt-1">{results.length} record(s) found from historical database</p>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Search Results
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  {results.length} record(s) found from historical database
+                </p>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={exportCSV}>
@@ -328,7 +406,8 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {results.map((rec, i) => {
-                const clean = (v: string) => (!v || v.toLowerCase() === "none" ? "N/A" : v);
+                const clean = (v: string) =>
+                  !v || v.toLowerCase() === "none" ? "N/A" : v;
                 const name = clean(rec.full_name);
                 const phone = clean(rec.phone);
                 const cnic = clean(rec.cnic);
@@ -342,7 +421,9 @@ export default function HomePage() {
                         </div>
                         <div>
                           <CardTitle className="text-lg">{name}</CardTitle>
-                          <p className="text-xs text-gray-500">Record #{i + 1}</p>
+                          <p className="text-xs text-gray-500">
+                            Record #{i + 1}
+                          </p>
                         </div>
                       </div>
                     </CardHeader>
@@ -350,22 +431,44 @@ export default function HomePage() {
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div>
                           <p className="text-xs text-gray-500">Phone</p>
-                          <p className="font-mono text-sm font-medium">{phone}</p>
+                          <p className="font-mono text-sm font-medium">
+                            {phone}
+                          </p>
                         </div>
                         {phone !== "N/A" && (
-                          <button onClick={() => copyToClipboard(phone, `phone-${i}`)} className="p-2 hover:bg-gray-200 rounded-lg transition-colors" title="Copy">
-                            {copiedField === `phone-${i}` ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                          <button
+                            onClick={() =>
+                              copyToClipboard(phone, `phone-${i}`)
+                            }
+                            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                            title="Copy"
+                          >
+                            {copiedField === `phone-${i}` ? (
+                              <Check className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-gray-400" />
+                            )}
                           </button>
                         )}
                       </div>
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div>
                           <p className="text-xs text-gray-500">CNIC</p>
-                          <p className="font-mono text-sm font-medium">{cnic}</p>
+                          <p className="font-mono text-sm font-medium">
+                            {cnic}
+                          </p>
                         </div>
                         {cnic !== "N/A" && (
-                          <button onClick={() => copyToClipboard(cnic, `cnic-${i}`)} className="p-2 hover:bg-gray-200 rounded-lg transition-colors" title="Copy">
-                            {copiedField === `cnic-${i}` ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                          <button
+                            onClick={() => copyToClipboard(cnic, `cnic-${i}`)}
+                            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                            title="Copy"
+                          >
+                            {copiedField === `cnic-${i}` ? (
+                              <Check className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-gray-400" />
+                            )}
                           </button>
                         )}
                       </div>
@@ -379,39 +482,72 @@ export default function HomePage() {
               })}
             </div>
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-800">
-              <strong>Note:</strong> This data comes from a historical database and may not reflect current SIM ownership. For the most accurate and up-to-date information, use the{" "}
-              <Link href="/blog/pak-sim-info-check-guide" className="underline font-semibold">PTA 668 SMS service</Link> or visit your nearest carrier franchise.
+              <strong>Note:</strong> This data comes from a historical database
+              and may not reflect current SIM ownership. For the most accurate
+              and up-to-date information, use the{" "}
+              <Link
+                href="/blog/pak-sim-info-check-guide"
+                className="underline font-semibold"
+              >
+                PTA 668 SMS service
+              </Link>{" "}
+              or visit your nearest carrier franchise.
             </div>
           </div>
         </section>
       )}
 
-      {/* Carrier Codes Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Official SIM Verification Codes</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              Official SIM Verification Codes
+            </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Check how many SIMs are registered against your CNIC using these official carrier codes. Simply dial the code from your registered number.
+              Check how many SIMs are registered against your CNIC using these
+              official carrier codes. Simply dial the code from your registered
+              number.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {carrierInfo.map((carrier) => (
-              <Card key={carrier.name} className="hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: carrier.color === "bg-red-500" ? "#ef4444" : carrier.color === "bg-blue-5[...]
+              <Card
+                key={carrier.name}
+                className="hover:shadow-lg transition-shadow border-l-4"
+                style={{
+                  borderLeftColor:
+                    carrier.color === "bg-red-500"
+                      ? "#ef4444"
+                      : carrier.color === "bg-blue-500"
+                      ? "#3b82f6"
+                      : carrier.color === "bg-purple-500"
+                      ? "#a855f7"
+                      : "#f97316",
+                }}
+              >
                 <CardContent className="pt-6">
-                  <div className={`w-10 h-10 rounded-lg ${carrier.color} flex items-center justify-center mb-4`}>
+                  <div
+                    className={`w-10 h-10 rounded-lg ${carrier.color} flex items-center justify-center mb-4`}
+                  >
                     <Phone className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1">{carrier.name}</h3>
-                  <p className="text-3xl font-mono font-bold text-blue-600 mb-2">{carrier.code}</p>
-                  <p className="text-sm text-gray-500">Dial from your number to check SIM count</p>
+                  <h3 className="font-bold text-gray-900 mb-1">
+                    {carrier.name}
+                  </h3>
+                  <p className="text-3xl font-mono font-bold text-blue-600 mb-2">
+                    {carrier.code}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Dial from your number to check SIM count
+                  </p>
                 </CardContent>
               </Card>
             ))}
           </div>
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500 mb-3">
-              You can also check via PTA: Send your CNIC (no dashes) to <strong className="text-blue-600 font-mono">668</strong>
+              You can also check via PTA: Send your CNIC (no dashes) to{" "}
+              <strong className="text-blue-600 font-mono">668</strong>
             </p>
             <Link href="/blog/pak-sim-info-check-guide">
               <Button variant="outline" className="font-semibold">
@@ -422,24 +558,34 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Why Trust PakSimInfo?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              Why Trust PakSimInfo?
+            </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              We provide accurate, legal, and up-to-date information about SIM verification in Pakistan. Our guides are based on official PTA procedures and carrier resources.
+              We provide accurate, legal, and up-to-date information about SIM
+              verification in Pakistan. Our guides are based on official PTA
+              procedures and carrier resources.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feat) => (
-              <Card key={feat.title} className="hover:shadow-lg transition-shadow">
+              <Card
+                key={feat.title}
+                className="hover:shadow-lg transition-shadow"
+              >
                 <CardContent className="pt-6">
                   <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
                     <feat.icon className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">{feat.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{feat.description}</p>
+                  <h3 className="font-bold text-gray-900 mb-2">
+                    {feat.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {feat.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -447,15 +593,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Latest Blog Posts */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Guides & Articles</h2>
-              <p className="text-gray-600">Comprehensive SIM verification guides updated for 2026</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Latest Guides & Articles
+              </h2>
+              <p className="text-gray-600">
+                Comprehensive SIM verification guides updated for 2026
+              </p>
             </div>
-            <Link href="/blog/sim-owner-detail-pakistan" className="hidden sm:flex items-center gap-1 text-blue-600 font-semibold hover:text-blue-700 text-sm">
+            <Link
+              href="/blog/sim-owner-detail-pakistan"
+              className="hidden sm:flex items-center gap-1 text-blue-600 font-semibold hover:text-blue-700 text-sm"
+            >
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -482,65 +634,91 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Frequently Asked Questions</h2>
-            <p className="text-gray-600">Common questions about SIM verification in Pakistan</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-gray-600">
+              Common questions about SIM verification in Pakistan
+            </p>
           </div>
           <div className="space-y-4">
             {[
-              { q: "Can I check the name of a SIM owner in Pakistan?", a: "Due to Pakistan's privacy laws, you cannot directly check the name of another person's SIM owner. However, you can verif[...]
-              { q: "What is the PTA SIM Information System 668?", a: "The PTA SIM Information System 668 is an official service by the Pakistan Telecommunication Authority that allows citizens to[...]
-              { q: "How do I check how many SIMs are on my CNIC?", a: "Send your 13-digit CNIC number (without dashes) via SMS to 668. You will receive a reply listing the total number of SIMs re[...]
-              { q: "Is it legal to track a mobile number in Pakistan?", a: "No, tracking someone's mobile number without their consent or a court order is illegal in Pakistan under the Prevention[...]
-              { q: "How can I block a lost or stolen SIM?", a: "To block a lost SIM, immediately contact your carrier's helpline (Jazz: 111, Telenor: 345, Zong: 310, Ufone: 333) or visit the near[...]
+              {
+                q: "Can I check the name of a SIM owner in Pakistan?",
+                a: "Due to Pakistan's privacy laws, you cannot directly check the name of another person's SIM owner. However, you can verify your own SIM using official methods.",
+              },
+              {
+                q: "What is the PTA SIM Information System 668?",
+                a: "The PTA SIM Information System 668 is an official service by the Pakistan Telecommunication Authority that allows citizens to check how many SIMs are registered against their CNIC.",
+              },
+              {
+                q: "How do I check how many SIMs are on my CNIC?",
+                a: "Send your 13-digit CNIC number (without dashes) via SMS to 668. You will receive a reply listing the total number of SIMs registered against your CNIC.",
+              },
+              {
+                q: "Is it legal to track a mobile number in Pakistan?",
+                a: "No, tracking someone's mobile number without their consent or a court order is illegal in Pakistan under the Prevention of Electronic Crimes Act.",
+              },
+              {
+                q: "How can I block a lost or stolen SIM?",
+                a: "To block a lost SIM, immediately contact your carrier's helpline (Jazz: 111, Telenor: 345, Zong: 310, Ufone: 333) or visit the nearest franchise.",
+              },
             ].map((faq, i) => (
-              <details key={i} className="group bg-white rounded-xl border shadow-sm">
+              <details
+                key={i}
+                className="group bg-white rounded-xl border shadow-sm"
+              >
                 <summary className="flex items-center justify-between cursor-pointer p-5 font-semibold text-gray-900 hover:text-blue-600 transition-colors">
                   <span>{faq.q}</span>
-                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoi[...]
+                  <svg
+                    className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                    />
+                  </svg>
                 </summary>
-                <div className="px-5 pb-5 text-gray-600 text-sm leading-relaxed">{faq.a}</div>
+                <div className="px-5 pb-5 text-gray-600 text-sm leading-relaxed">
+                  {faq.a}
+                </div>
               </details>
             ))}
           </div>
-          {/* FAQ Schema */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                mainEntity: [
-                  { "@type": "Question", name: "Can I check the name of a SIM owner in Pakistan?", acceptedAnswer: { "@type": "Answer", text: "Due to Pakistan's privacy laws, you cannot directly [...]
-                  { "@type": "Question", name: "What is the PTA SIM Information System 668?", acceptedAnswer: { "@type": "Answer", text: "The PTA SIM Information System 668 is an official service[...]
-                  { "@type": "Question", name: "How do I check how many SIMs are on my CNIC?", acceptedAnswer: { "@type": "Answer", text: "Send your 13-digit CNIC number to 668 via SMS." } },
-                  { "@type": "Question", name: "Is it legal to track a mobile number in Pakistan?", acceptedAnswer: { "@type": "Answer", text: "No, tracking someone's mobile number without consen[...]
-                  { "@type": "Question", name: "How can I block a lost or stolen SIM?", acceptedAnswer: { "@type": "Answer", text: "Contact your carrier's helpline or visit the nearest franchise.[...]
-                ],
-              }),
-            }}
-          />
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Verify Your SIM?</h2>
           <p className="text-blue-100 mb-8 text-lg">
-            Use our comprehensive guides to check SIM ownership, verify registrations, and protect your identity. All methods are officially approved by PTA.
+            Use our comprehensive guides to check SIM ownership, verify
+            registrations, and protect your identity. All methods are officially
+            approved by PTA.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg px-8">
+              <Button
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg px-8"
+              >
                 Check SIM Now
               </Button>
             </Link>
             <Link href="/blog/sim-owner-detail-pakistan">
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold px-8">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/30 text-white hover:bg-white/10 font-semibold px-8"
+              >
                 Read Full Guide
               </Button>
             </Link>
