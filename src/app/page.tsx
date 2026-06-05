@@ -118,80 +118,44 @@ export default function HomePage() {
 
     try {
       const allResults: SimRecord[] = [];
+      
       for (let i = 0; i < validInputs.length; i++) {
         const val = validInputs[i];
-        const targetUrl = `https://amscript.xyz/PublicApi/Siminfo.php?number=${val}`;
         
-        // Try direct API call first, then fallback to proxies
-        const proxies = [
-          targetUrl, // Direct call first
-          `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-          `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-          `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
-        ];
-
-        const fetchWithTimeout = async (url: string) => {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
-          try {
-            const response = await fetch(url, { 
-              signal: controller.signal,
-              headers: {
-                'Accept': 'application/json',
-              }
-            });
-            clearTimeout(timeoutId);
-            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-            const text = await response.text();
-            
-            // Parse response - handle both JSON and plain text
-            let json: any;
-            try {
-              json = JSON.parse(text);
-            } catch {
-              // If not JSON, try to parse as plain text
-              json = { success: false, data: text };
-            }
-            
-            if (json && (typeof json.success !== "undefined" || json.data)) {
-              return json;
-            }
-            throw new Error("Invalid response structure");
-          } catch (err) {
-            clearTimeout(timeoutId);
-            throw err;
-          }
-        };
-
         try {
-          const data = await Promise.any(proxies.map((url) => fetchWithTimeout(url)));
-          
-          // Handle different response structures
-          if (data.success === true && Array.isArray(data.data)) {
+          // Use our own API endpoint instead of calling external API directly
+          const response = await fetch("/api/siminfo", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ number: val }),
+          });
+
+          if (!response.ok) {
+            console.warn(`API error for ${val}: ${response.status}`);
+            continue;
+          }
+
+          const data = await response.json();
+
+          // Handle successful response
+          if (data.success && Array.isArray(data.data)) {
             const validRecs = data.data.filter((rec: any) => {
               const isNone = (v: any) => !v || (typeof v === 'string' && (v.trim().toLowerCase() === "none" || v.trim() === ""));
               return !(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address));
             });
             allResults.push(...validRecs);
-          } else if (data.data && !Array.isArray(data.data)) {
-            // Handle case where data.data is a single object
+          } else if (data.success && data.data && !Array.isArray(data.data)) {
+            // Single record response
             const rec = data.data;
-            if (rec.full_name || rec.phone || rec.cnic || rec.address) {
-              const isNone = (v: any) => !v || (typeof v === 'string' && (v.trim().toLowerCase() === "none" || v.trim() === ""));
-              if (!(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address))) {
-                allResults.push(rec);
-              }
+            const isNone = (v: any) => !v || (typeof v === 'string' && (v.trim().toLowerCase() === "none" || v.trim() === ""));
+            if (!(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address))) {
+              allResults.push(rec);
             }
-          } else if (Array.isArray(data)) {
-            // Handle case where response is directly an array
-            const validRecs = data.filter((rec: any) => {
-              const isNone = (v: any) => !v || (typeof v === 'string' && (v.trim().toLowerCase() === "none" || v.trim() === ""));
-              return !(isNone(rec.full_name) && isNone(rec.phone) && isNone(rec.cnic) && isNone(rec.address));
-            });
-            allResults.push(...validRecs);
           }
         } catch (e) {
-          console.warn(`Failed for ${val}:`, e);
+          console.warn(`Failed to fetch data for ${val}:`, e);
         }
       }
 
@@ -250,7 +214,7 @@ export default function HomePage() {
     <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIEwgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9IjAuMDMiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')]" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHd[...]
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-blue-800/40 border border-blue-700/50 rounded-full px-4 py-1.5 text-sm mb-6">
@@ -293,14 +257,14 @@ export default function HomePage() {
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && performSearch()}
                       placeholder="Enter mobile number (03XX) or CNIC (13 digits)"
-                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-base"
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-ba[...]
                     />
                   ) : (
                     <textarea
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Enter multiple numbers or CNICs, separated by commas or newlines..."
-                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-base"
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/10 border-none focus:outline-none focus:ring-2 focus:ring-blue-400/50 rounded-xl text-white placeholder:text-blue-300/70 text-ba[...]
                     />
                   )}
                 </div>
@@ -311,7 +275,7 @@ export default function HomePage() {
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path cla[...]
                       Searching...
                     </span>
                   ) : (
@@ -339,7 +303,7 @@ export default function HomePage() {
           <div className="flex items-start gap-2 text-sm text-amber-800">
             <Shield className="w-4 h-4 mt-0.5 shrink-0" />
             <p>
-              <strong>Legal Notice:</strong> PakSimInfo is an informational platform only. We are not affiliated with PTA or any telecom provider. We do not access private databases. The search tool uses a third-party historical database with limited data. For official verification, use{" "}
+              <strong>Legal Notice:</strong> PakSimInfo is an informational platform only. We are not affiliated with PTA or any telecom provider. We do not access private databases. The search t[...]
               <Link href="/blog/pak-sim-info-check-guide" className="underline font-semibold hover:text-amber-900">PTA 668 SMS service</Link> or visit{" "}
               <a href="https://www.pta.gov.pk" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-amber-900">PTA.gov.pk</a>.
             </p>
@@ -433,7 +397,7 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {carrierInfo.map((carrier) => (
-              <Card key={carrier.name} className="hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: carrier.color === "bg-red-500" ? "#ef4444" : carrier.color === "bg-blue-500" ? "#3b82f6" : carrier.color === "bg-purple-500" ? "#a855f7" : "#f97316" }}>
+              <Card key={carrier.name} className="hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: carrier.color === "bg-red-500" ? "#ef4444" : carrier.color === "bg-blue-5[...]
                 <CardContent className="pt-6">
                   <div className={`w-10 h-10 rounded-lg ${carrier.color} flex items-center justify-center mb-4`}>
                     <Phone className="w-5 h-5 text-white" />
@@ -527,16 +491,16 @@ export default function HomePage() {
           </div>
           <div className="space-y-4">
             {[
-              { q: "Can I check the name of a SIM owner in Pakistan?", a: "Due to Pakistan's privacy laws, you cannot directly check the name of another person's SIM owner. However, you can verify your own SIM using official channels like PTA 668 or your carrier's verification systems." },
-              { q: "What is the PTA SIM Information System 668?", a: "The PTA SIM Information System 668 is an official service by the Pakistan Telecommunication Authority that allows citizens to check how many SIMs are registered under their CNIC number by sending an SMS." },
-              { q: "How do I check how many SIMs are on my CNIC?", a: "Send your 13-digit CNIC number (without dashes) via SMS to 668. You will receive a reply listing the total number of SIMs registered under that CNIC." },
-              { q: "Is it legal to track a mobile number in Pakistan?", a: "No, tracking someone's mobile number without their consent or a court order is illegal in Pakistan under the Prevention of Electronic Crimes Act (PECA), 2016." },
-              { q: "How can I block a lost or stolen SIM?", a: "To block a lost SIM, immediately contact your carrier's helpline (Jazz: 111, Telenor: 345, Zong: 310, Ufone: 333) or visit the nearest franchise with your CNIC." },
+              { q: "Can I check the name of a SIM owner in Pakistan?", a: "Due to Pakistan's privacy laws, you cannot directly check the name of another person's SIM owner. However, you can verif[...]
+              { q: "What is the PTA SIM Information System 668?", a: "The PTA SIM Information System 668 is an official service by the Pakistan Telecommunication Authority that allows citizens to[...]
+              { q: "How do I check how many SIMs are on my CNIC?", a: "Send your 13-digit CNIC number (without dashes) via SMS to 668. You will receive a reply listing the total number of SIMs re[...]
+              { q: "Is it legal to track a mobile number in Pakistan?", a: "No, tracking someone's mobile number without their consent or a court order is illegal in Pakistan under the Prevention[...]
+              { q: "How can I block a lost or stolen SIM?", a: "To block a lost SIM, immediately contact your carrier's helpline (Jazz: 111, Telenor: 345, Zong: 310, Ufone: 333) or visit the near[...]
             ].map((faq, i) => (
               <details key={i} className="group bg-white rounded-xl border shadow-sm">
                 <summary className="flex items-center justify-between cursor-pointer p-5 font-semibold text-gray-900 hover:text-blue-600 transition-colors">
                   <span>{faq.q}</span>
-                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoi[...]
                 </summary>
                 <div className="px-5 pb-5 text-gray-600 text-sm leading-relaxed">{faq.a}</div>
               </details>
@@ -550,11 +514,11 @@ export default function HomePage() {
                 "@context": "https://schema.org",
                 "@type": "FAQPage",
                 mainEntity: [
-                  { "@type": "Question", name: "Can I check the name of a SIM owner in Pakistan?", acceptedAnswer: { "@type": "Answer", text: "Due to Pakistan's privacy laws, you cannot directly check the name of another person's SIM owner. However, you can verify your own SIM using official channels." } },
-                  { "@type": "Question", name: "What is the PTA SIM Information System 668?", acceptedAnswer: { "@type": "Answer", text: "The PTA SIM Information System 668 is an official service by the Pakistan Telecommunication Authority." } },
+                  { "@type": "Question", name: "Can I check the name of a SIM owner in Pakistan?", acceptedAnswer: { "@type": "Answer", text: "Due to Pakistan's privacy laws, you cannot directly [...]
+                  { "@type": "Question", name: "What is the PTA SIM Information System 668?", acceptedAnswer: { "@type": "Answer", text: "The PTA SIM Information System 668 is an official service[...]
                   { "@type": "Question", name: "How do I check how many SIMs are on my CNIC?", acceptedAnswer: { "@type": "Answer", text: "Send your 13-digit CNIC number to 668 via SMS." } },
-                  { "@type": "Question", name: "Is it legal to track a mobile number in Pakistan?", acceptedAnswer: { "@type": "Answer", text: "No, tracking someone's mobile number without consent is illegal in Pakistan." } },
-                  { "@type": "Question", name: "How can I block a lost or stolen SIM?", acceptedAnswer: { "@type": "Answer", text: "Contact your carrier's helpline or visit the nearest franchise." } },
+                  { "@type": "Question", name: "Is it legal to track a mobile number in Pakistan?", acceptedAnswer: { "@type": "Answer", text: "No, tracking someone's mobile number without consen[...]
+                  { "@type": "Question", name: "How can I block a lost or stolen SIM?", acceptedAnswer: { "@type": "Answer", text: "Contact your carrier's helpline or visit the nearest franchise.[...]
                 ],
               }),
             }}
